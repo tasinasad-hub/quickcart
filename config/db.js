@@ -7,15 +7,23 @@ if (!cached) {
 }
 
 async function connectDB() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    const opts = { bufferCommands: false };
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((mongoose) => mongoose);
+  // If already connected, return the cached connection
+  if (cached.conn) {
+    return cached.conn;
   }
 
+  // If no promise yet, create one
+  if (!cached.promise) {
+    const opts = { bufferCommands: false };
+    cached.promise = mongoose
+      .connect(process.env.MONGODB_URI, opts)
+      .then((mongooseInstance) => mongooseInstance);
+  }
+
+  // Await the promise and cache the connection
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 export default connectDB;
+
