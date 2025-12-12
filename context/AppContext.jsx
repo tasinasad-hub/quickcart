@@ -1,6 +1,5 @@
 'use client'
 import { useUser, useAuth } from "@clerk/nextjs";
-import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -20,12 +19,24 @@ export const AppContextProvider = (props) => {
   const { getToken } = useAuth();   // ✅ Correct source for getToken
 
   const [products, setProducts] = useState([]);
-  const [userData, setUserData] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [cartItems, setCartItems] = useState({});
 
+  // ✅ Correct API route: /api/product/list
   const fetchProductData = async () => {
-    setProducts(productsDummyData);
+    try {
+      const { data } = await axios.get('/api/product/list');
+      if (data.success) {
+        setProducts(data.products);
+      } else {
+        toast.error(data.message);
+        setProducts([]); // fallback to empty
+      }
+    } catch (error) {
+      toast.error(error.message);
+      setProducts([]); // fallback to empty
+    }
   };
 
   const fetchUserData = async () => {
@@ -34,7 +45,7 @@ export const AppContextProvider = (props) => {
         setIsSeller(true);
       }
 
-      const token = await getToken();   // ✅ Correct function name
+      const token = await getToken();
 
       const { data } = await axios.get("/api/user/data", {
         headers: { Authorization: `Bearer ${token}` },
@@ -42,7 +53,7 @@ export const AppContextProvider = (props) => {
 
       if (data.success) {
         setUserData(data.user);
-        setCartItems(data.user.cartItems);
+        setCartItems(data.user.cartItems || {});
       } else {
         toast.error(data.message);
       }
@@ -53,14 +64,9 @@ export const AppContextProvider = (props) => {
 
   const addToCart = async (itemId) => {
     let cartData = structuredClone(cartItems);
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
-    }
+    cartData[itemId] = (cartData[itemId] || 0) + 1;
     setCartItems(cartData);
-
-    toast.success("Item added to cart!");  // ✅ Feedback to user
+    toast.success("Item added to cart!");
   };
 
   const updateCartQuantity = async (itemId, quantity) => {
@@ -74,21 +80,15 @@ export const AppContextProvider = (props) => {
   };
 
   const getCartCount = () => {
-    let totalCount = 0;
-    for (const items in cartItems) {
-      if (cartItems[items] > 0) {
-        totalCount += cartItems[items];
-      }
-    }
-    return totalCount;
+    return Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
   };
 
   const getCartAmount = () => {
     let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      if (cartItems[items] > 0 && itemInfo) {
-        totalAmount += itemInfo.offerPrice * cartItems[items];
+    for (const itemId in cartItems) {
+      const itemInfo = products.find((product) => product._id === itemId);
+      if (itemInfo) {
+        totalAmount += itemInfo.offerPrice * cartItems[itemId];
       }
     }
     return Math.floor(totalAmount * 100) / 100;

@@ -19,7 +19,10 @@ export async function POST(request) {
     const isSeller = await authSeller(userId);
 
     if (!isSeller) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 403 }
+      );
     }
 
     const formData = await request.formData();
@@ -33,9 +36,13 @@ export async function POST(request) {
     const files = formData.getAll("images");
 
     if (!files || files.length === 0) {
-      return NextResponse.json({ success: false, message: "No files uploaded" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "No files uploaded" },
+        { status: 404 }
+      );
     }
 
+    // Upload all files to Cloudinary
     const results = await Promise.all(
       files.map(async (file) => {
         const arrayBuffer = await file.arrayBuffer();
@@ -56,7 +63,8 @@ export async function POST(request) {
       })
     );
 
-    const image = results.map((result) => result.secure_url);
+    // Collect secure URLs
+    const images = results.map((result) => result.secure_url);
 
     await connectDB();
     const newProduct = await Product.create({
@@ -66,11 +74,15 @@ export async function POST(request) {
       category,
       price: Number(price),
       offerPrice: Number(offerPrice),
-      image,
+      images, // ✅ corrected field name
       date: Date.now(),
     });
 
-    return NextResponse.json({ success: true, message: "Upload successful", newProduct });
+    return NextResponse.json({
+      success: true,
+      message: "Upload successful",
+      newProduct,
+    });
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message });
   }
