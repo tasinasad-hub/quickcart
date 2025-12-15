@@ -14,10 +14,22 @@ const MyOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchOrders = async () => {
-        setOrders(orderDummyData)
-        setLoading(false);
+   const fetchOrders = async () => {
+  try {
+    const res = await fetch("/api/order/list");
+    const data = await res.json();
+    if (data.success) {
+      setOrders(data.orders);
+    } else {
+      console.error("Failed to fetch orders:", data.message);
     }
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     useEffect(() => {
         fetchOrders();
