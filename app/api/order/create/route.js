@@ -1,6 +1,6 @@
-import connectDB from "../../../../config/db.js";        // ✅ four levels up
-import Order from "../../../../models/Order.js";         // ✅ four levels up
-import Product from "../../../../models/Product.js";     // ✅ four levels up
+import connectDB from "../../../../config/db.js";
+import Order from "../../../../models/Order.js";
+import Product from "../../../../models/Product.js";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
