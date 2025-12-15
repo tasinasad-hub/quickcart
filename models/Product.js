@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
 
-    userId: { type: String, required: true , ref : "user"},
+    userId: { type: String, required: true , ref : 'user'},
 
     name: { type: String, required: true },
 
@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
 
     offerPrice: { type: Number ,required: true},
 
-    images: { type: Array , required: true },
+    image: { type: Array , required: true },
     category: { type: String, required: true },
 
     date: { type: Number, default: Date.now },
@@ -20,6 +20,6 @@ const productSchema = new mongoose.Schema({
 
 })
 
-const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
+const Product = mongoose.models.product || mongoose.model('product', productSchema);
 
 export default Product

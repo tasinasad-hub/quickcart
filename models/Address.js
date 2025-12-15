@@ -8,8 +8,8 @@ const addressSchema = new mongoose.Schema({
   area: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
-});
+})
 
-const Address = mongoose.models.address || mongoose.model("address", addressSchema);
+const Address = mongoose.models.address || mongoose.model('address', addressSchema);
 
-export default Address;
+export default Address

@@ -1,6 +1,6 @@
 import connectDB from "@/config/db";
 import authSeller from "@/lib/authSeller";
-import Order from "@/models/Order"; // ✅ Import Order model
+import Product from "@/models/Product";   // ✅ Import Product model
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -10,18 +10,23 @@ export async function GET(request) {
 
     const isSeller = await authSeller(userId);
     if (!isSeller) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     await connectDB();
 
-    // ✅ Fetch orders and populate product + address
-    const orders = await Order.find({})
-      .populate("items.product")
-      .populate("address");
+    // ✅ Fetch products belonging to this seller
+    const products = await Product.find({ userId });
 
-    return NextResponse.json({ success: true, orders });
+    return NextResponse.json({ success: true, products }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ success: false, message: error.message });
+    console.error("Error fetching seller products:", error);
+    return NextResponse.json(
+      { success: false, message: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

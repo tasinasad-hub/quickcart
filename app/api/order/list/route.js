@@ -1,30 +1,33 @@
-import connectDB from "../../../../config/db.js";
-import Order from "../../../../models/Order.js";
+import connectDB from "@/config/db";
+import Address from "@/models/Address";
+import Order from "@/models/Order";
+import Product from "@/models/Product";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
-  try {
-    // Get the authenticated user
-    const { userId } = getAuth(request);
-    if (!userId) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
 
-    // Connect to MongoDB
+
+
+export async function GET(request) {
+
+  try {
+     
+    const { userId } = getAuth(request);
+
     await connectDB();
 
-    // Fetch orders for this user
-    const orders = await Order.find({ userId })
-      .populate({
-        path: "items.product",
-        select: "name offerPrice images",
-      })
-      .populate("address"); // ✅ include address if your schema references it
+    Address.length
+    Product.length
 
-    return NextResponse.json({ success: true, orders });
+    const orders = await Order.find({ userId }).populate('address').populate('items.product');
+
+    return NextResponse.json({success: true, orders}, {status: 200});
+
+
+
+
   } catch (error) {
-    console.error("API /order/list error:", error);
-    return NextResponse.json({ success: false, message: error.message });
+     return NextResponse.json({success: false, message: "Internal Server Error"}, {status: 500});
   }
+
 }
