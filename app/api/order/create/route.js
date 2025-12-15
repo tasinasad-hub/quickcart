@@ -1,6 +1,6 @@
-import connectDB from "@/config/db";
-import Order from "@/models/Order";
-import Product from "@/models/Product";
+import connectDB from "../../../config/db.js";        // ✅ relative path
+import Order from "../../../models/Order.js";         // ✅ relative path
+import Product from "../../../models/Product.js";     // ✅ relative path
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -31,7 +31,7 @@ export async function POST(request) {
       items,
       amount,
       status: "Order Placed",
-      date: new Date()
+      date: new Date(),
     });
 
     return NextResponse.json({ success: true, order });
