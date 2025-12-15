@@ -1,24 +1,21 @@
-import connectDB from "@/lib/connectDB"; // ✅ use lib if that's where your db file is
-import Product from "@/models/Product";
+import connectDB from "@/config/db";
+import Order from "@/models/Order";
+import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { userId } = getAuth(request);
     await connectDB();
 
-    const products = await Product.find({}).lean(); // ✅ safer for JSON
+    const orders = await Order.find({ userId })
+      .populate({
+        path: "items.product",
+        select: "name offerPrice images"
+      });
 
-    return NextResponse.json({
-      success: true,
-      products,
-    });
+    return NextResponse.json({ success: true, orders });
   } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message,
-      },
-      { status: 500 } // ✅ proper error status
-    );
+    return NextResponse.json({ success: false, message: error.message });
   }
 }

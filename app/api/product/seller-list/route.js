@@ -1,6 +1,6 @@
-import connectDB from "@/config/db"; // or "@/lib/connectDB" if you're using that
+import connectDB from "@/config/db";
 import authSeller from "@/lib/authSeller";
-import Product from "@/models/Product";
+import Order from "@/models/Order"; // ✅ Import Order model
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -9,26 +9,19 @@ export async function GET(request) {
     const { userId } = getAuth(request);
 
     const isSeller = await authSeller(userId);
-
     if (!isSeller) {
-      return NextResponse.json(
-        { success: false, message: "not authorized" },
-        { status: 403 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     await connectDB();
 
-    const products = await Product.find({});
+    // ✅ Fetch orders and populate product + address
+    const orders = await Order.find({})
+      .populate("items.product")
+      .populate("address");
 
-    return NextResponse.json({
-      success: true,
-      products,
-    });
+    return NextResponse.json({ success: true, orders });
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      message: error.message,
-    });
+    return NextResponse.json({ success: false, message: error.message });
   }
 }
