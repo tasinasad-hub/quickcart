@@ -66,7 +66,7 @@ export async function POST(request) {
       )
    
 
-      const image = result.map(result=>result.secure_url)
+      const images = result.map(result=>result.secure_url)
 
       await connectDB()
 
@@ -77,7 +77,7 @@ export async function POST(request) {
         category,
         price:Number(price),
         offerPrice:Number(offerPrice),
-        image,
+        images,
         date:Date.now()
       })
 

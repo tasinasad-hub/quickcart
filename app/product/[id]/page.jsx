@@ -50,7 +50,7 @@ const Product = () => {
             </div>
 
             <div className="grid grid-cols-4 gap-4">
-              {(productData.images || []).map((image, index) => (
+              {(productData.images|| []).map((image, index) => (
                 <div
                   key={index}
                   onClick={() => setMainImage(image)}
