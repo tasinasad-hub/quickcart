@@ -17,8 +17,6 @@ const Orders = () => {
   const fetchSellerOrders = async () => {
     try {
       const token = await getToken();
-
-      // ✅ Fixed API path here
       const { data } = await axios.get('/api/order/seller-order', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -62,20 +60,19 @@ const Orders = () => {
                   <p className="flex flex-col gap-3">
                     <span className="font-medium">
                       {order.items
+                        .filter((item) => item.product) // ✅ guard against null
                         .map(
                           (item) =>
-                            item.product.name + ` x ${item.quantity}`
+                            `${item.product.name} x ${item.quantity}`
                         )
-                        .join(", ")}
+                        .join(", ") || "Unknown products"}
                     </span>
                     <span>Items : {order.items.length}</span>
                   </p>
                 </div>
                 <div>
                   <p>
-                    <span className="font-medium">
-                      {order.address.fullName}
-                    </span>
+                    <span className="font-medium">{order.address.fullName}</span>
                     <br />
                     <span>{order.address.area}</span>
                     <br />
@@ -85,15 +82,12 @@ const Orders = () => {
                   </p>
                 </div>
                 <p className="font-medium my-auto">
-                  {currency}
-                  {order.amount}
+                  {currency}{order.amount}
                 </p>
                 <div>
                   <p className="flex flex-col">
                     <span>Method : COD</span>
-                    <span>
-                      Date : {new Date(order.date).toLocaleDateString()}
-                    </span>
+                    <span>Date : {new Date(order.date).toLocaleDateString()}</span>
                     <span>Payment : Pending</span>
                   </p>
                 </div>
