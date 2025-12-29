@@ -11,11 +11,9 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-3 border-b border-gray-300 text-gray-700">
-      
-      {/* EShop Logo - enlarged */}
+    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-32 py-2 border-b border-gray-300 text-gray-700">
       <Image
-        className="cursor-pointer w-40 md:w-48" // increased from w-28/md:w-32
+        className="cursor-pointer w-40 md:w-48"
         onClick={() => router.push("/")}
         src={assets.logo}
         alt="EShop logo"
