@@ -18,7 +18,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    // ✅ Fetch products belonging to this seller
+   
     const products = await Product.find({ userId });
 
     return NextResponse.json({ success: true, products }, { status: 200 });

@@ -6,8 +6,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const products = await Product.find({}).lean(); // ✅ safer for JSON
-
+    const products = await Product.find({}).lean(); 
     return NextResponse.json({
       success: true,
       products,
@@ -18,7 +17,7 @@ export async function GET() {
         success: false,
         message: error.message,
       },
-      { status: 500 } // ✅ proper error status
+      { status: 500 } 
     );
   }
 }

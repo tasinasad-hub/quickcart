@@ -1,7 +1,7 @@
 import { inngest } from "@/config/inngest";
 import Product from "@/models/Product";
 import User from "@/models/User";
-import Order from "@/models/Order";   // ✅ add import
+import Order from "@/models/Order";   
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -17,14 +17,14 @@ export async function POST(request) {
       );
     }
 
-    // calculate amount
+    
     let amount = 0;
     for (const item of items) {
       const product = await Product.findById(item.product);
       amount += product.offerPrice * item.quantity;
     }
 
-    // ✅ save order directly in MongoDB
+   
     const order = await Order.create({
       userId,
       address,
@@ -33,7 +33,7 @@ export async function POST(request) {
       date: Date.now(),
     });
 
-    // still send Inngest event for background jobs
+    
     await inngest.send({
       name: "order/created",
       data: {
@@ -45,7 +45,7 @@ export async function POST(request) {
       },
     });
 
-    // clear user cart
+    
     const user = await User.findById(userId);
     user.cartItems = {};
     await user.save();

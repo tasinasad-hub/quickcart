@@ -6,7 +6,7 @@ import User from "@/models/User";
 
 export async function GET(request) {
   try {
-    const { userId } = getAuth(request);  // ✅ Correct spelling and casing
+    const { userId } = getAuth(request); 
 
     await connectDB();
 

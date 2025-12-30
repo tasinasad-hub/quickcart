@@ -16,14 +16,14 @@ export const AppContextProvider = (props) => {
   const router = useRouter();
 
   const { user } = useUser();
-  const { getToken } = useAuth();   // ✅ Correct source for getToken
+  const { getToken } = useAuth();   
 
   const [products, setProducts] = useState([]);
   const [userData, setUserData] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [cartItems, setCartItems] = useState({});
 
-  // ✅ Correct API route: /api/product/list
+  
   const fetchProductData = async () => {
     try {
       const { data } = await axios.get('/api/product/list');
@@ -31,11 +31,11 @@ export const AppContextProvider = (props) => {
         setProducts(data.products);
       } else {
         toast.error(data.message);
-        setProducts([]); // fallback to empty
+        setProducts([]); 
       }
     } catch (error) {
       toast.error(error.message);
-      setProducts([]); // fallback to empty
+      setProducts([]); 
     }
   };
 
